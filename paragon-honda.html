@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sheet CSV Data Viewer (Full Width)</title>
+    <title>Google Sheet CSV Data Viewer (Compact)</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -31,18 +31,20 @@
             max-width: 100%;
             padding: 0;
         }
-        /* Single row for details */
+        /* Single row for details - compact height */
         .details-row {
             display: flex;
             overflow-x: auto;
-            padding: 8px 0;
-            gap: 8px;
+            padding: 4px 0;
+            gap: 6px;
             width: 100%;
+            min-height: 40px;
         }
         .detail-item {
             flex: 0 0 auto;
-            min-width: 150px;
-            max-width: 200px;
+            min-width: 120px;
+            max-width: 180px;
+            height: 32px;
         }
         /* Full width for embed container with no padding */
         .embed-container {
@@ -56,15 +58,15 @@
         }
         /* Custom scrollbar for horizontal details */
         .details-row::-webkit-scrollbar {
-            height: 8px;
+            height: 6px;
         }
         .details-row::-webkit-scrollbar-track {
             background: #f0f4ff;
-            border-radius: 4px;
+            border-radius: 3px;
         }
         .details-row::-webkit-scrollbar-thumb {
             background-color: #c7d2fe;
-            border-radius: 4px;
+            border-radius: 3px;
         }
     </style>
 </head>
@@ -72,20 +74,20 @@
 
     <div class="data-viewer-container bg-white rounded-none shadow-2xl p-0 flex flex-col space-y-0">
         
-        <h1 class="text-3xl font-extrabold text-center text-indigo-700 border-b-2 pb-3 pt-6 px-6">
-            Full Width Data Viewer
+        <h1 class="text-2xl font-extrabold text-center text-indigo-700 border-b pb-2 pt-4 px-6">
+            Compact Data Viewer
         </h1>
 
         <!-- Loading / Error Message -->
-        <div id="status-display" class="p-4 bg-indigo-100 text-indigo-800 text-center font-medium mx-6 mt-4 rounded-lg">
+        <div id="status-display" class="p-3 bg-indigo-100 text-indigo-800 text-center font-medium mx-6 mt-3 rounded">
             Loading data from Google Sheet...
         </div>
 
         <!-- Data Card -->
         <div id="data-card" class="hidden border-0 p-0 bg-white">
             
-            <!-- FIRST BLOCK: All non-URL/Image details in a single horizontal row -->
-            <div id="detail-fields" class="details-row border-b-2 border-indigo-100 px-6 py-4">
+            <!-- FIRST BLOCK: All non-URL/Image details in a single horizontal row - compact -->
+            <div id="detail-fields" class="details-row border-b border-indigo-100 px-4 py-2">
                 <!-- Non-URL fields will be inserted here -->
             </div>
             
@@ -96,18 +98,18 @@
         </div>
 
         <!-- Navigation Controls -->
-        <div class="flex justify-between items-center p-6 bg-gray-50 mt-4">
+        <div class="flex justify-between items-center p-4 bg-gray-50 mt-2">
             <button id="prev-btn" onclick="previousRow()" disabled
-                class="nav-btn bg-gray-300 text-gray-800 p-3 rounded-xl font-semibold transition duration-300 hover:bg-gray-400 disabled:shadow-none disabled:transform-none">
+                class="nav-btn bg-gray-300 text-gray-800 px-3 py-2 rounded-lg font-semibold transition duration-300 hover:bg-gray-400 disabled:shadow-none disabled:transform-none">
                 &larr; Previous
             </button>
 
-            <span id="counter" class="text-lg font-medium text-indigo-600">
+            <span id="counter" class="text-base font-medium text-indigo-600">
                 0 of 0
             </span>
             
             <button id="next-btn" onclick="nextRow()" disabled
-                class="nav-btn bg-indigo-600 text-white p-3 rounded-xl font-semibold transition duration-300 hover:bg-indigo-700 disabled:shadow-none disabled:transform-none">
+                class="nav-btn bg-indigo-600 text-white px-3 py-2 rounded-lg font-semibold transition duration-300 hover:bg-indigo-700 disabled:shadow-none disabled:transform-none">
                 Next &rarr;
             </button>
         </div>
@@ -161,7 +163,7 @@
 
             let urlFound = false;
 
-            // --- FIRST PASS: Render all NON-URL fields in a single row ---
+            // --- FIRST PASS: Render all NON-URL fields in a single row - compact ---
             for (const key in record) {
                 const value = record[key];
 
@@ -172,16 +174,16 @@
 
                 if (value) {
                     const fieldDiv = document.createElement('div');
-                    fieldDiv.className = 'detail-item flex flex-col p-2 bg-gray-50 rounded-lg border border-gray-200';
+                    fieldDiv.className = 'detail-item flex flex-row items-center p-1 bg-gray-50 rounded border border-gray-200';
                     
                     // Field Label (Key)
                     const label = document.createElement('span');
-                    label.className = 'text-xs font-semibold text-gray-500 uppercase tracking-wider truncate';
-                    label.textContent = key;
+                    label.className = 'text-xs font-semibold text-gray-500 uppercase truncate mr-1';
+                    label.textContent = key + ':';
                     
                     // Field Value (Data)
                     const displayValue = document.createElement('span');
-                    displayValue.className = 'text-sm font-bold text-gray-800 truncate';
+                    displayValue.className = 'text-xs font-bold text-gray-800 truncate';
                     displayValue.textContent = value;
                     
                     fieldDiv.appendChild(label);
@@ -203,7 +205,7 @@
                     embedContainer.className = 'embed-container';
 
                     const fieldHeader = document.createElement('p');
-                    fieldHeader.className = 'text-lg font-bold text-gray-700 mb-2 border-b pb-1 px-6 pt-4';
+                    fieldHeader.className = 'text-base font-bold text-gray-700 mb-1 border-b pb-1 px-4 pt-2';
                     fieldHeader.textContent = `Embedded Content: ${key}`;
                     embedContentContainer.appendChild(fieldHeader);
                     
@@ -222,13 +224,13 @@
                         
                         // Add warning about embedding limitations
                         const warning = document.createElement('p');
-                        warning.className = 'mt-2 mb-2 p-2 text-xs bg-yellow-100 text-yellow-800 rounded-md font-medium border border-yellow-300 mx-6';
+                        warning.className = 'mt-1 mb-1 p-1 text-xs bg-yellow-100 text-yellow-800 rounded font-medium border border-yellow-300 mx-4';
                         warning.innerHTML = `⚠️ **Embedding Attempt:** URL from column **"${key}"** is being loaded in an iframe. If content is blank, the external website security policy (X-Frame-Options) is likely blocking the embed.`;
                         displayValue.appendChild(warning);
                         
                         // Iframe container for height control
                         const iframeContainer = document.createElement('div');
-                        iframeContainer.className = 'w-full h-80 overflow-hidden mt-2';
+                        iframeContainer.className = 'w-full h-80 overflow-hidden mt-1';
                         
                         // The Iframe element
                         const iframe = document.createElement('iframe');
@@ -246,7 +248,7 @@
                         link.href = value;
                         link.textContent = `Open Full Link (${key}) in New Tab`;
                         link.target = '_blank';
-                        link.className = 'block mt-2 text-sm text-blue-600 hover:text-blue-800 underline px-6 pb-4';
+                        link.className = 'block mt-1 text-xs text-blue-600 hover:text-blue-800 underline px-4 pb-2';
                         displayValue.appendChild(link);
                     }
                     
@@ -260,7 +262,7 @@
             
             // If no URL was found, display a message in the content area
             if (!urlFound) {
-                 embedContentContainer.innerHTML = `<div class="p-4 text-center text-gray-500 italic">No image or web link found in the current row.</div>`;
+                 embedContentContainer.innerHTML = `<div class="p-2 text-center text-gray-500 italic">No image or web link found in the current row.</div>`;
             }
 
             // Update UI state
