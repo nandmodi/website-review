@@ -85,15 +85,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
         }
         .feedback-option {
             display: flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 6px;
             transition: all 0.2s;
         }
@@ -111,6 +112,7 @@
         }
         .issue { color: #dc2626; }
         .missing { color: #d97706; }
+        .syncing { color: #7c3aed; }
         .done { color: #059669; }
         /* Custom scrollbar for horizontal details */
         .details-row::-webkit-scrollbar {
@@ -227,6 +229,11 @@
                     <span class="feedback-label missing">Missing</span>
                 </div>
                 
+                <div class="feedback-option" onclick="toggleFeedback('syncing')">
+                    <input type="checkbox" id="syncing-checkbox" class="syncing-checkbox">
+                    <span class="feedback-label syncing">Syncing Issue</span>
+                </div>
+                
                 <div class="feedback-option" onclick="toggleFeedback('done')">
                     <input type="checkbox" id="done-checkbox" class="done-checkbox">
                     <span class="feedback-label done">Done</span>
@@ -260,6 +267,7 @@
         let currentFeedback = {
             issue: false,
             missing: false,
+            syncing: false,
             done: false
         };
 
@@ -277,6 +285,7 @@
         const nextBtn = document.getElementById('next-btn');
         const issueCheckbox = document.getElementById('issue-checkbox');
         const missingCheckbox = document.getElementById('missing-checkbox');
+        const syncingCheckbox = document.getElementById('syncing-checkbox');
         const doneCheckbox = document.getElementById('done-checkbox');
         const submitFeedbackBtn = document.getElementById('submit-feedback');
         const submissionOverlay = document.getElementById('submission-overlay');
@@ -454,6 +463,7 @@
             // Update checkboxes
             issueCheckbox.checked = currentFeedback.issue;
             missingCheckbox.checked = currentFeedback.missing;
+            syncingCheckbox.checked = currentFeedback.syncing;
             doneCheckbox.checked = currentFeedback.done;
         }
         
@@ -461,16 +471,18 @@
             currentFeedback = {
                 issue: false,
                 missing: false,
+                syncing: false,
                 done: false
             };
             
             issueCheckbox.checked = false;
             missingCheckbox.checked = false;
+            syncingCheckbox.checked = false;
             doneCheckbox.checked = false;
         }
         
         function submitFeedback() {
-            if (!currentFeedback.issue && !currentFeedback.missing && !currentFeedback.done) {
+            if (!currentFeedback.issue && !currentFeedback.missing && !currentFeedback.syncing && !currentFeedback.done) {
                 alert('Please select a feedback option before submitting.');
                 return;
             }
@@ -480,6 +492,7 @@
             
             if (currentFeedback.issue) feedbackType = 'Issue';
             if (currentFeedback.missing) feedbackType = 'Missing';
+            if (currentFeedback.syncing) feedbackType = 'Syncing Issue';
             if (currentFeedback.done) feedbackType = 'Done';
             
             // Show loading overlay
