@@ -35,27 +35,17 @@
                 max-width: 80rem;
             }
         }
-        /* Custom scrollbar for horizontal details */
-        .details-container {
+        /* Single row for details */
+        .details-row {
+            display: flex;
             overflow-x: auto;
-            white-space: nowrap;
-            scrollbar-width: thin;
-            scrollbar-color: #c7d2fe #f0f4ff;
-        }
-        .details-container::-webkit-scrollbar {
-            height: 8px;
-        }
-        .details-container::-webkit-scrollbar-track {
-            background: #f0f4ff;
-            border-radius: 4px;
-        }
-        .details-container::-webkit-scrollbar-thumb {
-            background-color: #c7d2fe;
-            border-radius: 4px;
+            padding-bottom: 8px;
+            gap: 8px;
         }
         .detail-item {
-            display: inline-block;
+            flex: 0 0 auto;
             min-width: 150px;
+            max-width: 200px;
         }
         /* Full width for embed container */
         .embed-container {
@@ -63,6 +53,18 @@
         }
         .embed-container iframe, .embed-container img {
             width: 100%;
+        }
+        /* Custom scrollbar for horizontal details */
+        .details-row::-webkit-scrollbar {
+            height: 8px;
+        }
+        .details-row::-webkit-scrollbar-track {
+            background: #f0f4ff;
+            border-radius: 4px;
+        }
+        .details-row::-webkit-scrollbar-thumb {
+            background-color: #c7d2fe;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -82,8 +84,8 @@
         <!-- Data Card -->
         <div id="data-card" class="hidden border border-indigo-200 rounded-lg p-5 shadow-lg bg-white">
             
-            <!-- FIRST BLOCK: All non-URL/Image details in a single horizontal line -->
-            <div id="detail-fields" class="details-container mb-4 pb-4 border-b-2 border-indigo-100">
+            <!-- FIRST BLOCK: All non-URL/Image details in a single horizontal row -->
+            <div id="detail-fields" class="details-row mb-4 pb-4 border-b-2 border-indigo-100">
                 <!-- Non-URL fields will be inserted here -->
             </div>
             
@@ -159,7 +161,7 @@
 
             let urlFound = false;
 
-            // --- FIRST PASS: Render all NON-URL fields in a single line ---
+            // --- FIRST PASS: Render all NON-URL fields in a single row ---
             for (const key in record) {
                 const value = record[key];
 
@@ -170,7 +172,7 @@
 
                 if (value) {
                     const fieldDiv = document.createElement('div');
-                    fieldDiv.className = 'detail-item flex flex-col p-2 bg-gray-50 rounded-lg border border-gray-200 mx-1';
+                    fieldDiv.className = 'detail-item flex flex-col p-2 bg-gray-50 rounded-lg border border-gray-200';
                     
                     // Field Label (Key)
                     const label = document.createElement('span');
