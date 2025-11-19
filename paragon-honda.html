@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Width Data Viewer</title>
+    <title>Data Viewer with Status Filtering</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -21,7 +21,7 @@
             display: flex;
             flex-direction: column;
         }
-        /* Detail row - full width, reduced height, sticky */
+        /* Detail row - full width, reduced height */
         .details-row {
             display: flex;
             overflow-x: auto;
@@ -72,6 +72,46 @@
             box-shadow: 0 6px 16px rgba(49, 46, 129, 0.4);
             transform: translateY(-2px);
         }
+        /* Feedback section - fixed at bottom, over embed */
+        .feedback-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-top: 2px solid #e5e7eb;
+            z-index: 40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .feedback-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .feedback-option:hover {
+            background: #f3f4f6;
+        }
+        .feedback-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .feedback-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .issue { color: #dc2626; }
+        .missing { color: #d97706; }
+        .done { color: #059669; }
         /* Custom scrollbar for horizontal details */
         .details-row::-webkit-scrollbar {
             height: 6px;
@@ -93,6 +133,34 @@
             background: #e0e7ff;
             border-bottom: 1px solid #c7d2fe;
         }
+        /* Loading overlay for form submission */
+        .submission-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            font-size: 18px;
+            flex-direction: column;
+        }
+        .submission-overlay.hidden {
+            display: none;
+        }
+        /* Stats display */
+        .stats-display {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f0f4ff;
+            border-bottom: 1px solid #c7d2fe;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-0 m-0">
@@ -102,11 +170,18 @@
         <!-- Status and Counter Row -->
         <div class="status-container">
             <h1 class="text-xl font-bold text-indigo-700">
-               Paragon Honda
+                Data Viewer with Status Filtering
             </h1>
             <span id="counter" class="text-base font-medium text-indigo-600">
                 0 of 0
             </span>
+        </div>
+
+        <!-- Stats Display -->
+        <div id="stats-display" class="stats-display hidden">
+            <span id="total-count">Total: 0</span>
+            <span id="filtered-count">Pending Review: 0</span>
+            <span id="completed-count">Completed: 0</span>
         </div>
 
         <!-- Loading / Error Message -->
@@ -139,25 +214,72 @@
                     &rarr;
                 </button>
             </div>
+            
+            <!-- Feedback Section - Fixed at bottom -->
+            <div class="feedback-section">
+                <div class="feedback-option" onclick="toggleFeedback('issue')">
+                    <input type="checkbox" id="issue-checkbox" class="issue-checkbox">
+                    <span class="feedback-label issue">Issue</span>
+                </div>
+                
+                <div class="feedback-option" onclick="toggleFeedback('missing')">
+                    <input type="checkbox" id="missing-checkbox" class="missing-checkbox">
+                    <span class="feedback-label missing">Missing</span>
+                </div>
+                
+                <div class="feedback-option" onclick="toggleFeedback('done')">
+                    <input type="checkbox" id="done-checkbox" class="done-checkbox">
+                    <span class="feedback-label done">Done</span>
+                </div>
+                
+                <button id="submit-feedback" onclick="submitFeedback()" 
+                    class="ml-4 bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-indigo-700 transition duration-200">
+                    Submit Feedback
+                </button>
+            </div>
+        </div>
+        
+        <!-- Submission Overlay -->
+        <div id="submission-overlay" class="submission-overlay hidden">
+            <div class="text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-4"></div>
+                <p>Submitting feedback...</p>
+            </div>
         </div>
     </div>
 
     <script>
         // --- Configuration ---
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2w83bmtTlnAjxBQIx1r1mYvZwvwX0lneW6MWxF-4kNQ-Gf4Gv1KdsQEbXW7aFdgF-dHV8YUuCrI9s/pub?gid=0&single=true&output=csv';
-
+        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf89JFVwHcQtA79mHKvCLEYOXlmihccjBGQlDCpVUXhr9pJPg/formResponse';
+        
         // --- State Variables ---
-        let data = [];
+        let allData = []; // All data from the CSV
+        let filteredData = []; // Data filtered to exclude rows with Status values
         let currentIndex = 0;
+        let currentFeedback = {
+            issue: false,
+            missing: false,
+            done: false
+        };
 
         // --- DOM Elements ---
         const statusDisplay = document.getElementById('status-display');
         const dataCard = document.getElementById('data-card');
+        const statsDisplay = document.getElementById('stats-display');
         const detailFieldsContainer = document.getElementById('detail-fields');
         const embedContentContainer = document.getElementById('embed-content');
         const counterSpan = document.getElementById('counter');
+        const totalCountSpan = document.getElementById('total-count');
+        const filteredCountSpan = document.getElementById('filtered-count');
+        const completedCountSpan = document.getElementById('completed-count');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
+        const issueCheckbox = document.getElementById('issue-checkbox');
+        const missingCheckbox = document.getElementById('missing-checkbox');
+        const doneCheckbox = document.getElementById('done-checkbox');
+        const submitFeedbackBtn = document.getElementById('submit-feedback');
+        const submissionOverlay = document.getElementById('submission-overlay');
 
         // --- Helper Function: CSV to JSON Parser (Simple) ---
         function parseCSV(csvText) {
@@ -180,11 +302,53 @@
             return records;
         }
 
+        // --- Filter Data by Status ---
+        function filterDataByStatus(data) {
+            // Filter out records that have a value in the "Status" column
+            // We check for "Status" with different capitalizations
+            const filtered = data.filter(record => {
+                const status = record.Status || record.status || record.STATUS;
+                // If status exists and has a non-empty value, exclude the record
+                return !status || status.trim() === '';
+            });
+            
+            return filtered;
+        }
+        
+        // --- Update Stats Display ---
+        function updateStatsDisplay() {
+            const total = allData.length;
+            const filtered = filteredData.length;
+            const completed = total - filtered;
+            
+            totalCountSpan.textContent = `Total: ${total}`;
+            filteredCountSpan.textContent = `Pending Review: ${filtered}`;
+            completedCountSpan.textContent = `Completed: ${completed}`;
+            
+            // Show stats if we have data
+            if (total > 0) {
+                statsDisplay.classList.remove('hidden');
+            }
+        }
+
         // --- Core Rendering Function ---
         function renderCurrentRow() {
-            if (data.length === 0) return;
+            if (filteredData.length === 0) {
+                // No more items to review
+                embedContentContainer.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center">
+                        <div class="text-center">
+                            <h2 class="text-2xl font-bold text-gray-700 mb-4">All Items Reviewed!</h2>
+                            <p class="text-gray-500">There are no more items pending review.</p>
+                        </div>
+                    </div>
+                `;
+                detailFieldsContainer.innerHTML = '';
+                updateNavigation();
+                return;
+            }
 
-            const record = data[currentIndex];
+            const record = filteredData[currentIndex];
             detailFieldsContainer.innerHTML = ''; // Clear details
             embedContentContainer.innerHTML = ''; // Clear embed
 
@@ -273,13 +437,135 @@
                  embedContentContainer.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-500 italic bg-gray-100">No image or web link found in the current row.</div>`;
             }
 
+            // Reset feedback for new row
+            resetFeedback();
+            
             // Update UI state
             updateNavigation();
         }
 
+        // --- Feedback Functions ---
+        function toggleFeedback(type) {
+            // Only allow one selection at a time
+            resetFeedback();
+            
+            currentFeedback[type] = true;
+            
+            // Update checkboxes
+            issueCheckbox.checked = currentFeedback.issue;
+            missingCheckbox.checked = currentFeedback.missing;
+            doneCheckbox.checked = currentFeedback.done;
+        }
+        
+        function resetFeedback() {
+            currentFeedback = {
+                issue: false,
+                missing: false,
+                done: false
+            };
+            
+            issueCheckbox.checked = false;
+            missingCheckbox.checked = false;
+            doneCheckbox.checked = false;
+        }
+        
+        function submitFeedback() {
+            if (!currentFeedback.issue && !currentFeedback.missing && !currentFeedback.done) {
+                alert('Please select a feedback option before submitting.');
+                return;
+            }
+            
+            const record = filteredData[currentIndex];
+            let feedbackType = '';
+            
+            if (currentFeedback.issue) feedbackType = 'Issue';
+            if (currentFeedback.missing) feedbackType = 'Missing';
+            if (currentFeedback.done) feedbackType = 'Done';
+            
+            // Show loading overlay
+            submissionOverlay.classList.remove('hidden');
+            
+            // Submit form data in the background
+            submitFormData(record, feedbackType);
+        }
+        
+        function submitFormData(record, feedbackType) {
+            // Create a form element
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GOOGLE_FORM_URL;
+            form.target = 'form-submit-iframe';
+            form.style.display = 'none';
+            
+            // Create hidden iframe for form submission
+            let iframe = document.getElementById('form-submit-iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.name = 'form-submit-iframe';
+                iframe.id = 'form-submit-iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+            
+            // Add form fields with the correct field IDs from the Google Form
+            const fields = [
+                { name: 'entry.294959880', value: 'feedback' },
+                { name: 'entry.600095267', value: record.SKU_NAME || record.sku_name || '' },
+                { name: 'entry.751249552', value: record.Sku_iD || record.sku_id || '' },
+                { name: 'entry.342940290', value: record.spin_id || '' },
+                { name: 'entry.119703911', value: feedbackType },
+                { name: 'entry.enterprise_name', value: record.enterprise_name || '' } // Added enterprise_name field
+            ];
+            
+            fields.forEach(field => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field.name;
+                input.value = field.value;
+                form.appendChild(input);
+            });
+            
+            // Add form to document and submit
+            document.body.appendChild(form);
+            form.submit();
+            
+            // Remove form after submission
+            setTimeout(() => {
+                document.body.removeChild(form);
+                
+                // Hide loading overlay after a short delay
+                setTimeout(() => {
+                    submissionOverlay.classList.add('hidden');
+                    
+                    // Remove the current record from filteredData since it now has a status
+                    // In a real implementation, you might want to refresh the data from the source
+                    // For now, we'll just move to the next record
+                    if (currentIndex < filteredData.length - 1) {
+                        currentIndex++;
+                        renderCurrentRow();
+                    } else {
+                        // If we're at the last record, show a completion message
+                        embedContentContainer.innerHTML = `
+                            <div class="w-full h-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <h2 class="text-2xl font-bold text-gray-700 mb-4">All Items Reviewed!</h2>
+                                    <p class="text-gray-500">There are no more items pending review.</p>
+                                </div>
+                            </div>
+                        `;
+                        detailFieldsContainer.innerHTML = '';
+                    }
+                    
+                    // Update stats
+                    updateStatsDisplay();
+                    
+                }, 1000);
+            }, 500);
+        }
+
         // --- Navigation Logic ---
         function updateNavigation() {
-            const total = data.length;
+            const total = filteredData.length;
             counterSpan.textContent = `${currentIndex + 1} of ${total}`;
 
             // Disable buttons at boundaries
@@ -305,7 +591,7 @@
         }
 
         function nextRow() {
-            if (currentIndex < data.length - 1) {
+            if (currentIndex < filteredData.length - 1) {
                 currentIndex++;
                 renderCurrentRow();
             }
@@ -353,8 +639,22 @@
                     return;
                 }
                 
-                data = parsedData;
+                allData = parsedData;
+                
+                // Filter data to exclude rows with Status values
+                filteredData = filterDataByStatus(allData);
+                
+                if (filteredData.length === 0) {
+                    statusDisplay.textContent = 'All items have already been reviewed!';
+                    statusDisplay.classList.replace('bg-indigo-100', 'bg-green-100');
+                    statusDisplay.classList.replace('text-indigo-800', 'text-green-800');
+                    return;
+                }
+                
                 currentIndex = 0; // Start at the first record
+                
+                // Update stats display
+                updateStatsDisplay();
                 
                 // Hide status and show data card
                 statusDisplay.classList.add('hidden');
@@ -374,6 +674,8 @@
         // Global functions for button clicks
         window.nextRow = nextRow;
         window.previousRow = previousRow;
+        window.toggleFeedback = toggleFeedback;
+        window.submitFeedback = submitFeedback;
         
         // Start the application when the page loads
         initializeApp();
