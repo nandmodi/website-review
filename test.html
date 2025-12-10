@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compact Website Review</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page {
+            flex: 1;
+            display: none;
+        }
+        
+        .active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .login-form {
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            height: 36px;
+        }
+        
+        textarea {
+            min-height: 36px;
+            resize: vertical;
+            line-height: 1.4;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+        
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+            height: 36px;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+        }
+        
+        /* COMPACT TOP BAR */
+        .top-bar {
+            background: #2c3e50;
+            color: white;
+            padding: 8px 20px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            flex-wrap: nowrap;
+            height: 75px;
+        }
+        
+        .top-bar .form-group {
+            flex: 1;
+            margin: 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            height: 60px;
+        }
+        
+        .top-bar input,
+        .top-bar select,
+        .top-bar textarea {
+            height: 36px;
+            flex-shrink: 0;
+        }
+        
+        .top-bar label {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #ddd;
+            flex-shrink: 0;
+        }
+        
+        /* Buttons container */
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+            align-items: flex-end;
+            height: 60px;
+        }
+        
+        .btn-submit {
+            background: #2196F3;
+            padding: 8px 16px;
+        }
+        
+        .btn-submit:hover {
+            background: #1976D2;
+        }
+        
+        .btn-summary {
+            background: #5c6bc0;
+            padding: 8px 12px;
+        }
+        
+        .btn-summary:hover {
+            background: #3f51b5;
+        }
+        
+        /* TAB BAR */
+        .tab-bar {
+            background: #34495e;
+            display: flex;
+            padding: 0 10px;
+            height: 40px;
+            align-items: center;
+            border-bottom: 1px solid #2c3e50;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+        
+        .tab {
+            background: #7f8c8d;
+            color: white;
+            padding: 8px 15px;
+            margin-right: 5px;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 100%;
+            border: none;
+            min-width: 100px;
+        }
+        
+        .tab.active {
+            background: #ecf0f1;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .tab-close {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .tab-close:hover {
+            background: rgba(0,0,0,0.1);
+        }
+        
+        /* IFRAME CONTAINER */
+        .iframe-container {
+            flex: 1;
+            position: relative;
+            background: white;
+        }
+        
+        .website-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+        
+        .website-frame.active {
+            display: block;
+        }
+        
+        .counter {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: #27ae60;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+            z-index: 2000;
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .status-success {
+            background: #27ae60;
+        }
+        
+        .status-error {
+            background: #e74c3c;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+            font-size: 12px;
+        }
+        
+        /* Login form */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .session-stats {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .summary-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .summary-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .field-vin,
+        .field-issue,
+        .field-comment {
+            flex: 1;
+        }
+        
+        #comment {
+            resize: none;
+            overflow-y: auto;
+            min-height: 36px;
+            max-height: 36px;
+        }
+        
+        .right-click-helper {
+            position: fixed;
+            bottom: 50px;
+            right: 15px;
+            background: #f39c12;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        /* Tab indicator */
+        .tab-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading">
+        Submitting...
+    </div>
+    
+    <!-- Status Bar -->
+    <div id="statusBar" class="status-bar"></div>
+    
+    <!-- Submission Counter -->
+    <div id="counter" class="counter" style="display: none;">
+        ✓ <span id="submissionCount">0</span>
+    </div>
+    
+    <!-- Right-click helper -->
+    <div id="rightClickHelper" class="right-click-helper">
+        All links will open in embedded tabs above
+    </div>
+
+    <div class="container">
+        <!-- Login Page -->
+        <div id="login-page" class="page active">
+            <div class="login-container">
+                <div class="login-card">
+                    <h2>Review Setup</h2>
+                    <div class="form-group">
+                        <label class="required">Date</label>
+                        <input type="date" id="date">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Review By</label>
+                        <select id="review">
+                            <option value="">Select Reviewer</option>
+                            <option value="Nand Kishor">Nand Kishor</option>
+                            <option value="Praveen Agarwal">Praveen Agarwal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Enterprise ID</label>
+                        <input type="text" id="enterpriseId">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Team ID</label>
+                        <input type="text" id="teamId">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Website URL</label>
+                        <input type="text" id="websiteUrl" placeholder="https://example.com">
+                    </div>
+                    <button class="btn" onclick="setupReview()" style="width: 100%; padding: 10px;">
+                        Start Review Session
+                    </button>
+                    
+                    <!-- Session Statistics -->
+                    <div id="sessionStats" class="session-stats">
+                        <div class="stats-row">
+                            <span>Total Submissions:</span>
+                            <span id="sessionCount">0</span>
+                        </div>
+                        <div class="stats-row">
+                            <span>Last Submitted:</span>
+                            <span id="lastSubmitTime">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Review Page -->
+        <div id="review-page" class="page">
+            <!-- Compact Top Bar -->
+            <div class="top-bar">
+                <div class="form-group field-vin">
+                    <label class="required">Vin/Stock</label>
+                    <input type="text" id="vinStock" placeholder="Enter VIN" autocomplete="off">
+                </div>
+                
+                <div class="form-group field-issue">
+                    <label class="required">Issue</label>
+                    <select id="issue">
+                        <option value="">Select</option>
+                        <option value="Issue">Issue</option>
+                        <option value="360 Missing">360 Missing</option>
+                        <option value="Sync Issue">Sync Issue</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+                
+                <div class="form-group field-comment">
+                    <label>Comment (Optional)</label>
+                    <textarea id="comment" placeholder="Optional comment..." rows="1"></textarea>
+                </div>
+                
+                <div class="buttons-container">
+                    <button onclick="submitReview()" class="btn btn-submit">Submit</button>
+                    <button onclick="showSummary()" class="btn btn-summary">Summary</button>
+                </div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar" id="tabBar">
+                <!-- Tabs will be added here -->
+            </div>
+            
+            <!-- Iframe Container -->
+            <div class="iframe-container" id="iframeContainer">
+                <!-- Iframes will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Compact Session Summary Modal -->
+    <div id="summaryModal" class="summary-modal">
+        <div class="summary-content">
+            <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 18px;">Session Summary</h3>
+            <div id="summaryContent"></div>
+            <div style="margin-top: 20px; display: flex; gap: 8px; justify-content: flex-end;">
+                <button onclick="closeSummary()" class="btn" style="background: #95a5a6; padding: 6px 12px;">Close</button>
+                <button onclick="endSession()" class="btn" style="background: #e74c3c; padding: 6px 12px;">End Session</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let submissionCount = 0;
+        let sessionData = [];
+        let loginData = {};
+        let tabs = [];
+        const MAX_TABS = 5;
+        let tabIdCounter = 1;
+        
+        // DOM elements
+        const loginPage = document.getElementById('login-page');
+        const reviewPage = document.getElementById('review-page');
+        const loading = document.getElementById('loading');
+        const statusBar = document.getElementById('statusBar');
+        const counter = document.getElementById('counter');
+        const submissionCountElement = document.getElementById('submissionCount');
+        const sessionStats = document.getElementById('sessionStats');
+        const sessionCountElement = document.getElementById('sessionCount');
+        const lastSubmitTimeElement = document.getElementById('lastSubmitTime');
+        const summaryModal = document.getElementById('summaryModal');
+        const summaryContent = document.getElementById('summaryContent');
+        const rightClickHelper = document.getElementById('rightClickHelper');
+        const tabBar = document.getElementById('tabBar');
+        const iframeContainer = document.getElementById('iframeContainer');
+        
+        // Form elements
+        const dateInput = document.getElementById('date');
+        const reviewInput = document.getElementById('review');
+        const enterpriseIdInput = document.getElementById('enterpriseId');
+        const teamIdInput = document.getElementById('teamId');
+        const websiteUrlInput = document.getElementById('websiteUrl');
+        const vinStockInput = document.getElementById('vinStock');
+        const issueInput = document.getElementById('issue');
+        const commentInput = document.getElementById('comment');
+        
+        // Set today's date
+        dateInput.valueAsDate = new Date();
+        
+        // Load session data from localStorage
+        loadSessionData();
+        
+        // Setup review session
+        function setupReview() {
+            // Validate required fields
+            if (!dateInput.value || !reviewInput.value || !enterpriseIdInput.value || 
+                !teamIdInput.value || !websiteUrlInput.value) {
+                showStatus('Please fill all required fields', 'error');
+                return;
+            }
+            
+            // Validate URL
+            let url = websiteUrlInput.value.trim();
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            try {
+                new URL(url);
+            } catch (_) {
+                showStatus('Please enter a valid website URL', 'error');
+                return;
+            }
+            
+            // Save login data
+            loginData = {
+                date: dateInput.value,
+                review: reviewInput.value,
+                enterpriseId: enterpriseIdInput.value,
+                teamId: teamIdInput.value,
+                websiteUrl: url,
+                sessionStart: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            saveSessionData();
+            
+            // Initialize with only Tab 1
+            initializeTabs(url);
+            
+            // Switch to review page
+            loginPage.classList.remove('active');
+            reviewPage.classList.add('active');
+            
+            // Show counter
+            counter.style.display = 'block';
+            submissionCountElement.textContent = submissionCount;
+            
+            // Show session stats
+            sessionStats.style.display = 'block';
+            sessionCountElement.textContent = submissionCount;
+            
+            // Show right-click helper
+            rightClickHelper.style.display = 'block';
+            setTimeout(() => {
+                rightClickHelper.style.display = 'none';
+            }, 4000);
+            
+            // Focus on first input
+            setTimeout(() => {
+                vinStockInput.focus();
+            }, 100);
+        }
+        
+        // Initialize tabs with only Tab 1
+        function initializeTabs(url) {
+            // Clear existing tabs
+            tabBar.innerHTML = '';
+            iframeContainer.innerHTML = '';
+            tabs = [];
+            tabIdCounter = 1;
+            
+            // Add only Tab 1
+            createTab(url, 'Main');
+            
+            // Show tab count
+            updateTabCounter();
+        }
+        
+        // Create a new tab
+        function createTab(url, title = null) {
+            if (tabs.length >= MAX_TABS) {
+                showStatus('Maximum 5 tabs allowed', 'error');
+                return null;
+            }
+            
+            const tabId = tabIdCounter++;
+            const tabTitle = title || `Tab ${tabId}`;
+            
+            const tab = {
+                id: tabId,
+                url: url,
+                title: tabTitle,
+                active: true
+            };
+            
+            // Create tab element
+            const tabElement = document.createElement('button');
+            tabElement.className = 'tab active';
+            tabElement.dataset.tabId = tabId;
+            tabElement.innerHTML = `
+                <span class="tab-title">${tab.title}</span>
+                <button class="tab-close">×</button>
+            `;
+            
+            tabBar.appendChild(tabElement);
+            
+            // Create iframe - CRITICAL CHANGE: Remove sandbox completely
+            const iframe = document.createElement('iframe');
+            iframe.className = 'website-frame active';
+            iframe.id = `iframe-${tabId}`;
+            // NO SANDBOX - allows full control
+            iframe.referrerpolicy = 'no-referrer-when-downgrade';
+            iframe.src = url;
+            
+            // Set up iframe event listeners BEFORE loading
+            setupIframeEvents(iframe, tabId);
+            
+            iframeContainer.appendChild(iframe);
+            
+            // Add to tabs array
+            tabs.push(tab);
+            
+            // Set this tab as active
+            setActiveTab(tabId);
+            
+            // Add event listeners to tab
+            tabElement.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('tab-close')) {
+                    setActiveTab(tabId);
+                }
+            });
+            
+            // Add close button event listener
+            const closeBtn = tabElement.querySelector('.tab-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeTab(tabId);
+                });
+            }
+            
+            // Update tab counter
+            updateTabCounter();
+            
+            return tabId;
+        }
+        
+        // Set up iframe events to CAPTURE ALL NEW TAB ATTEMPTS
+        function setupIframeEvents(iframe, tabId) {
+            // Listen for iframe load
+            iframe.addEventListener('load', function() {
+                try {
+                    // Wait a bit for page to fully load
+                    setTimeout(() => {
+                        try {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                            const iframeWin = iframe.contentWindow;
+                            
+                            // OVERRIDE window.open COMPLETELY
+                            const originalWindowOpen = iframeWin.window.open;
+                            iframeWin.window.open = function(url, target, features) {
+                                console.log('window.open intercepted:', url, target);
+                                
+                                // ALWAYS create new embedded tab
+                                const newTabId = createTab(url, 'New Tab');
+                                if (newTabId) {
+                                    showStatus('Opened in new embedded tab', 'success');
+                                }
+                                
+                                // Return null to prevent actual window
+                                return null;
+                            };
+                            
+                            // OVERRIDE window.open at top level too
+                            iframeWin.open = iframeWin.window.open;
+                            
+                            // Intercept ALL link clicks
+                            iframeDoc.addEventListener('click', function(e) {
+                                const link = e.target.closest('a');
+                                if (link && link.href) {
+                                    // Check if it's supposed to open in new tab/window
+                                    const shouldOpenNew = 
+                                        link.target === '_blank' || 
+                                        link.target === 'new' ||
+                                        e.ctrlKey || 
+                                        e.metaKey ||  // Cmd on Mac
+                                        e.shiftKey || 
+                                        e.button === 1; // Middle click
+                                    
+                                    if (shouldOpenNew) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        e.stopImmediatePropagation();
+                                        
+                                        // Create new embedded tab
+                                        const newTabId = createTab(link.href, 'New Tab');
+                                        if (newTabId) {
+                                            showStatus('Opened in new embedded tab', 'success');
+                                        }
+                                        
+                                        return false;
+                                    }
+                                }
+                            });
+                            
+                            // Intercept middle-click
+                            iframeDoc.addEventListener('auxclick', function(e) {
+                                if (e.button === 1) { // Middle click
+                                    const link = e.target.closest('a');
+                                    if (link && link.href) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        e.stopImmediatePropagation();
+                                        
+                                        const newTabId = createTab(link.href, 'New Tab');
+                                        if (newTabId) {
+                                            showStatus('Opened in new embedded tab', 'success');
+                                        }
+                                        
+                                        return false;
+                                    }
+                                }
+                            });
+                            
+                            // Intercept right-click context menu
+                            iframeDoc.addEventListener('contextmenu', function(e) {
+                                const link = e.target.closest('a');
+                                if (link && link.href) {
+                                    // Store for later use if needed
+                                    iframeWin.lastRightClickedLink = link.href;
+                                }
+                            });
+                            
+                            // Also override window.open for dynamically created windows
+                            const script = iframeDoc.createElement('script');
+                            script.textContent = `
+                                // Override window.open at the deepest level
+                                (function() {
+                                    const originalWindowOpen = window.open;
+                                    window.open = function(url, target, features) {
+                                        // Send message to parent to open in embedded tab
+                                        window.parent.postMessage({
+                                            type: 'OPEN_IN_EMBEDDED_TAB',
+                                            url: url || '',
+                                            source: 'window.open'
+                                        }, '*');
+                                        return null; // Block actual window
+                                    };
+                                    
+                                    // Also override document.createElement for iframes/objects
+                                    const originalCreateElement = document.createElement;
+                                    document.createElement = function(tagName) {
+                                        const element = originalCreateElement.call(this, tagName);
+                                        if (tagName.toLowerCase() === 'iframe') {
+                                            const originalIframeSetAttribute = element.setAttribute;
+                                            element.setAttribute = function(name, value) {
+                                                if (name === 'src') {
+                                                    window.parent.postMessage({
+                                                        type: 'OPEN_IN_EMBEDDED_TAB',
+                                                        url: value,
+                                                        source: 'iframe'
+                                                    }, '*');
+                                                }
+                                                return originalIframeSetAttribute.call(this, name, value);
+                                            };
+                                        }
+                                        return element;
+                                    };
+                                })();
+                            `;
+                            iframeDoc.head.appendChild(script);
+                            
+                        } catch (e) {
+                            console.log('CORS restriction - cannot modify iframe content');
+                        }
+                    }, 1000);
+                    
+                } catch (e) {
+                    console.log('Error setting up iframe events:', e);
+                }
+            });
+        }
+        
+        // Listen for messages from iframes
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'OPEN_IN_EMBEDDED_TAB') {
+                const { url, source } = event.data;
+                
+                if (url) {
+                    const newTabId = createTab(url, 'New Tab');
+                    if (newTabId) {
+                        showStatus('Opened in embedded tab', 'success');
+                    }
+                }
+            }
+        });
+        
+        // Also add global event listeners to catch any popups
+        window.addEventListener('blur', function() {
+            // If window loses focus (popup might have opened), try to refocus
+            setTimeout(() => {
+                window.focus();
+            }, 100);
+        });
+        
+        // Block actual popup windows
+        window.open = function(url, target, features) {
+            console.log('Blocked popup attempt:', url);
+            
+            // Create embedded tab instead
+            if (url) {
+                const newTabId = createTab(url, 'Popup');
+                if (newTabId) {
+                    showStatus('Popup redirected to embedded tab', 'success');
+                }
+            }
+            
+            return null;
+        };
+        
+        // Set active tab
+        function setActiveTab(tabId) {
+            // Update all tabs to inactive
+            tabs.forEach(tab => {
+                tab.active = false;
+            });
+            
+            // Update all tab elements
+            document.querySelectorAll('.tab').forEach(tabEl => {
+                tabEl.classList.remove('active');
+            });
+            
+            // Update all iframes
+            document.querySelectorAll('.website-frame').forEach(iframe => {
+                iframe.classList.remove('active');
+            });
+            
+            // Set active tab
+            const activeTab = tabs.find(tab => tab.id === tabId);
+            if (activeTab) {
+                activeTab.active = true;
+                
+                // Update tab element
+                const tabEl = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+                if (tabEl) {
+                    tabEl.classList.add('active');
+                }
+                
+                // Update iframe
+                const iframe = document.getElementById(`iframe-${tabId}`);
+                if (iframe) {
+                    iframe.classList.add('active');
+                }
+            }
+        }
+        
+        // Close tab
+        function closeTab(tabId) {
+            // Don't close the last tab
+            if (tabs.length <= 1) {
+                showStatus('Cannot close the last tab', 'error');
+                return;
+            }
+            
+            // Find tab index
+            const tabIndex = tabs.findIndex(tab => tab.id === tabId);
+            if (tabIndex === -1) return;
+            
+            // Remove tab from array
+            const [removedTab] = tabs.splice(tabIndex, 1);
+            
+            // Remove tab element
+            const tabEl = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+            if (tabEl) {
+                tabEl.remove();
+            }
+            
+            // Remove iframe
+            const iframe = document.getElementById(`iframe-${tabId}`);
+            if (iframe) {
+                iframe.remove();
+            }
+            
+            // If closed tab was active, activate another tab
+            if (removedTab.active && tabs.length > 0) {
+                // Activate the next tab, or previous if no next
+                const nextTabIndex = Math.min(tabIndex, tabs.length - 1);
+                setActiveTab(tabs[nextTabIndex].id);
+            }
+            
+            // Update tab counter
+            updateTabCounter();
+        }
+        
+        // Update tab counter display
+        function updateTabCounter() {
+            counter.innerHTML = `✓ <span id="submissionCount">${submissionCount}</span>`;
+            if (tabs.length > 1) {
+                counter.innerHTML += ` <span class="tab-count">${tabs.length}</span>`;
+            }
+        }
+        
+        // Submit review data
+        function submitReview() {
+            // Get values
+            const vinStock = vinStockInput.value.trim();
+            const issue = issueInput.value;
+            const comment = commentInput.value.trim();
+            
+            // Validate
+            if (!vinStock || !issue) {
+                showStatus('Please enter Vin/Stock and select an Issue', 'error');
+                vinStockInput.focus();
+                return;
+            }
+            
+            // Show loading
+            loading.style.display = 'block';
+            
+            // Prepare data
+            const reviewData = {
+                ...loginData,
+                vinStock: vinStock,
+                issue: issue,
+                comment: comment || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Save to session data
+            sessionData.push(reviewData);
+            
+            // Submit to Google Forms in background
+            submitToGoogleForms(reviewData).then(success => {
+                // Hide loading
+                loading.style.display = 'none';
+                
+                if (success) {
+                    // Increment counter
+                    submissionCount++;
+                    submissionCountElement.textContent = submissionCount;
+                    sessionCountElement.textContent = submissionCount;
+                    
+                    // Show success status
+                    showStatus(`✓ Submitted: ${vinStock}`, 'success');
+                    
+                    // Clear form fields
+                    clearReviewForm();
+                    
+                    // Save session data
+                    saveSessionData();
+                    
+                    // Update last submit time
+                    lastSubmitTimeElement.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    // Update tab counter
+                    updateTabCounter();
+                    
+                    // Auto-focus on Vin/Stock for next entry
+                    setTimeout(() => {
+                        vinStockInput.focus();
+                    }, 50);
+                } else {
+                    showStatus('Failed to submit. Data saved locally.', 'error');
+                }
+            }).catch(error => {
+                loading.style.display = 'none';
+                showStatus('Error submitting data', 'error');
+                console.error('Submission error:', error);
+            });
+        }
+        
+        // Clear review form
+        function clearReviewForm() {
+            vinStockInput.value = '';
+            issueInput.value = '';
+            commentInput.value = '';
+            commentInput.style.height = '36px';
+        }
+        
+        // Submit to Google Forms
+        function submitToGoogleForms(data) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const iframe = document.createElement('iframe');
+                    iframe.name = 'google-form-iframe-' + Date.now();
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                    
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSeBICS9bbzhuZ9oJFczlA24CQeD-DrF-so3E3f3smRzYpILow/formResponse';
+                    form.target = iframe.name;
+                    form.style.display = 'none';
+                    
+                    const fields = {
+                        'entry.1920772593': data.date || '',
+                        'entry.1492030820': data.review || '',
+                        'entry.118970267': data.enterpriseId || '',
+                        'entry.629761069': data.teamId || '',
+                        'entry.1030198039': data.websiteUrl || '',
+                        'entry.116830960': data.vinStock || '',
+                        'entry.251357690': data.issue || '',
+                        'entry.1023639881': data.comment || ''
+                    };
+                    
+                    for (const [name, value] of Object.entries(fields)) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = name;
+                        input.value = value;
+                        form.appendChild(input);
+                    }
+                    
+                    document.body.appendChild(form);
+                    
+                    iframe.onload = function() {
+                        setTimeout(() => {
+                            document.body.removeChild(form);
+                            document.body.removeChild(iframe);
+                            resolve(true);
+                        }, 500);
+                    };
+                    
+                    iframe.onerror = function() {
+                        document.body.removeChild(form);
+                        document.body.removeChild(iframe);
+                        resolve(false);
+                    };
+                    
+                    form.submit();
+                    
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+        
+        // Show status message
+        function showStatus(message, type) {
+            statusBar.textContent = message;
+            statusBar.className = 'status-bar status-' + type;
+            statusBar.style.display = 'block';
+            
+            setTimeout(() => {
+                statusBar.style.display = 'none';
+            }, 2000);
+        }
+        
+        // Save session data to localStorage
+        function saveSessionData() {
+            const session = {
+                loginData: loginData,
+                sessionData: sessionData,
+                submissionCount: submissionCount,
+                lastUpdate: new Date().toISOString()
+            };
+            localStorage.setItem('reviewSessionData', JSON.stringify(session));
+        }
+        
+        // Load session data from localStorage
+        function loadSessionData() {
+            try {
+                const savedSession = localStorage.getItem('reviewSessionData');
+                if (savedSession) {
+                    const session = JSON.parse(savedSession);
+                    loginData = session.loginData || {};
+                    sessionData = session.sessionData || [];
+                    submissionCount = session.submissionCount || 0;
+                    
+                    if (loginData.date) dateInput.value = loginData.date;
+                    if (loginData.review) reviewInput.value = loginData.review;
+                    if (loginData.enterpriseId) enterpriseIdInput.value = loginData.enterpriseId;
+                    if (loginData.teamId) teamIdInput.value = loginData.teamId;
+                    if (loginData.websiteUrl) websiteUrlInput.value = loginData.websiteUrl;
+                    
+                    if (submissionCount > 0) {
+                        submissionCountElement.textContent = submissionCount;
+                        sessionCountElement.textContent = submissionCount;
+                        sessionStats.style.display = 'block';
+                        
+                        if (sessionData.length > 0) {
+                            const lastSubmit = new Date(sessionData[sessionData.length - 1].timestamp);
+                            lastSubmitTimeElement.textContent = lastSubmit.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('No saved session data');
+            }
+        }
+        
+        // Show session summary
+        function showSummary() {
+            let summaryHTML = `
+                <div style="margin-bottom: 15px;">
+                    <div><strong>Reviewer:</strong> ${loginData.review}</div>
+                    <div><strong>Session Start:</strong> ${new Date(loginData.sessionStart).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    <div><strong>Total Submissions:</strong> ${submissionCount}</div>
+                    <div><strong>Active Tabs:</strong> ${tabs.length}</div>
+                </div>
+                <div style="max-height: 200px; overflow-y: auto; border-top: 1px solid #eee; padding-top: 10px;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">Recent Submissions:</div>
+            `;
+            
+            const recentSubmissions = sessionData.slice(-10).reverse();
+            if (recentSubmissions.length > 0) {
+                recentSubmissions.forEach((item, index) => {
+                    const time = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    summaryHTML += `<div style="padding: 3px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px;">
+                        ${time} - ${item.vinStock} <span style="color: #666;">(${item.issue})</span>
+                    </div>`;
+                });
+            } else {
+                summaryHTML += `<div style="color: #999; font-style: italic;">No submissions yet</div>`;
+            }
+            
+            summaryHTML += `</div>`;
+            summaryContent.innerHTML = summaryHTML;
+            summaryModal.style.display = 'flex';
+        }
+        
+        // Close summary modal
+        function closeSummary() {
+            summaryModal.style.display = 'none';
+        }
+        
+        // End session
+        function endSession() {
+            if (confirm('End current review session and return to login?')) {
+                localStorage.removeItem('reviewSessionData');
+                
+                submissionCount = 0;
+                sessionData = [];
+                tabs = [];
+                tabIdCounter = 1;
+                
+                counter.style.display = 'none';
+                
+                clearReviewForm();
+                dateInput.value = new Date().toISOString().split('T')[0];
+                reviewInput.value = '';
+                enterpriseIdInput.value = '';
+                teamIdInput.value = '';
+                websiteUrlInput.value = '';
+                
+                reviewPage.classList.remove('active');
+                loginPage.classList.add('active');
+                sessionStats.style.display = 'none';
+                
+                showStatus('Session ended successfully', 'success');
+            }
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Only work on review page
+            if (!reviewPage.classList.contains('active')) return;
+            
+            // Ctrl+Enter or Alt+Enter to submit
+            if ((e.ctrlKey || e.altKey) && e.key === 'Enter') {
+                submitReview();
+                e.preventDefault();
+            }
+            
+            // Ctrl+Tab to switch tabs
+            if (e.ctrlKey && e.key === 'Tab') {
+                if (tabs.length > 1) {
+                    e.preventDefault();
+                    const currentIndex = tabs.findIndex(tab => tab.active);
+                    const nextIndex = (currentIndex + 1) % tabs.length;
+                    setActiveTab(tabs[nextIndex].id);
+                }
+            }
+            
+            // Ctrl+W to close current tab
+            if (e.ctrlKey && e.key === 'w') {
+                const activeTab = tabs.find(tab => tab.active);
+                if (activeTab && tabs.length > 1) {
+                    closeTab(activeTab.id);
+                    e.preventDefault();
+                }
+            }
+            
+            // Tab navigation with Enter
+            if (e.key === 'Enter' && !e.ctrlKey && !e.altKey) {
+                const activeElement = document.activeElement;
+                if (activeElement === vinStockInput) {
+                    issueInput.focus();
+                    e.preventDefault();
+                } else if (activeElement === issueInput) {
+                    commentInput.focus();
+                    e.preventDefault();
+                } else if (activeElement === commentInput) {
+                    submitReview();
+                    e.preventDefault();
+                }
+            }
+            
+            // Escape key to clear form
+            if (e.key === 'Escape') {
+                clearReviewForm();
+                vinStockInput.focus();
+                e.preventDefault();
+            }
+        });
+        
+        // Auto-resize comment textarea
+        commentInput.addEventListener('input', function() {
+            this.style.height = '36px';
+            if (this.scrollHeight > 36) {
+                this.style.height = '36px';
+                this.style.overflowY = 'auto';
+            }
+        });
+        
+        // Auto-focus on review page load
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && reviewPage.classList.contains('active')) {
+                setTimeout(() => {
+                    vinStockInput.focus();
+                }, 100);
+            }
+        });
+        
+        // Initialize comment height
+        commentInput.style.height = '36px';
+    </script>
+</body>
+</html>
