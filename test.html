@@ -53,7 +53,7 @@
             border-radius: 4px;
             font-size: 14px;
             box-sizing: border-box;
-            height: 36px;
+            height: 36px; /* Same height for all */
         }
         
         textarea {
@@ -74,35 +74,36 @@
             font-size: 14px;
             font-weight: bold;
             transition: background 0.3s;
-            height: 36px;
+            height: 36px; /* Same height as inputs */
         }
         
         .btn:hover {
             background: #45a049;
         }
         
-        /* COMPACT TOP BAR */
+        /* COMPACT TOP BAR - All in one row */
         .top-bar {
             background: #2c3e50;
             color: white;
             padding: 8px 20px;
             display: flex;
-            gap: 15px;
-            align-items: flex-end;
+            gap: 15px; /* Space between fields */
+            align-items: flex-end; /* Align items at bottom */
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             flex-wrap: nowrap;
-            height: 75px;
+            height: 75px; /* Fixed compact height */
         }
         
         .top-bar .form-group {
-            flex: 1;
+            flex: 1; /* Equal width for all fields */
             margin: 0;
             min-width: 0;
             display: flex;
             flex-direction: column;
-            height: 60px;
+            height: 60px; /* Fixed height for form group */
         }
         
+        /* Make all fields same height */
         .top-bar input,
         .top-bar select,
         .top-bar textarea {
@@ -110,6 +111,7 @@
             flex-shrink: 0;
         }
         
+        /* Adjust label spacing */
         .top-bar label {
             font-size: 12px;
             margin-bottom: 4px;
@@ -144,79 +146,11 @@
             background: #3f51b5;
         }
         
-        /* TAB BAR */
-        .tab-bar {
-            background: #34495e;
-            display: flex;
-            padding: 0 10px;
-            height: 40px;
-            align-items: center;
-            border-bottom: 1px solid #2c3e50;
-            overflow-x: auto;
-            overflow-y: hidden;
-            white-space: nowrap;
-        }
-        
-        .tab {
-            background: #7f8c8d;
-            color: white;
-            padding: 8px 15px;
-            margin-right: 5px;
-            border-radius: 4px 4px 0 0;
-            cursor: pointer;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            height: 100%;
-            border: none;
-            min-width: 100px;
-        }
-        
-        .tab.active {
-            background: #ecf0f1;
-            color: #2c3e50;
-            font-weight: bold;
-        }
-        
-        .tab-close {
-            background: none;
-            border: none;
-            color: inherit;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 0;
-            width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-        
-        .tab-close:hover {
-            background: rgba(0,0,0,0.1);
-        }
-        
-        /* IFRAME CONTAINER */
-        .iframe-container {
-            flex: 1;
-            position: relative;
-            background: white;
-        }
-        
         .website-frame {
-            width: 100%;
-            height: 100%;
+            flex: 1;
             border: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: none;
-        }
-        
-        .website-frame.active {
-            display: block;
+            margin: 0;
+            background: white;
         }
         
         .counter {
@@ -282,7 +216,7 @@
             font-size: 12px;
         }
         
-        /* Login form */
+        /* Login form specific */
         .login-container {
             display: flex;
             justify-content: center;
@@ -299,6 +233,7 @@
             max-width: 450px;
         }
         
+        /* Session stats - compact */
         .session-stats {
             margin-top: 20px;
             padding: 12px;
@@ -314,6 +249,7 @@
             margin-bottom: 5px;
         }
         
+        /* Summary modal */
         .summary-modal {
             display: none;
             position: fixed;
@@ -337,42 +273,19 @@
             overflow-y: auto;
         }
         
+        /* Ensure consistent field heights */
         .field-vin,
         .field-issue,
         .field-comment {
             flex: 1;
         }
         
+        /* Specific adjustment for textarea to match height */
         #comment {
             resize: none;
             overflow-y: auto;
             min-height: 36px;
             max-height: 36px;
-        }
-        
-        .right-click-helper {
-            position: fixed;
-            bottom: 50px;
-            right: 15px;
-            background: #f39c12;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            z-index: 1000;
-            display: none;
-        }
-        
-        /* Tab indicator */
-        .tab-count {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #e74c3c;
-            color: white;
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 10px;
         }
     </style>
 </head>
@@ -388,11 +301,6 @@
     <!-- Submission Counter -->
     <div id="counter" class="counter" style="display: none;">
         ✓ <span id="submissionCount">0</span>
-    </div>
-    
-    <!-- Right-click helper -->
-    <div id="rightClickHelper" class="right-click-helper">
-        All links will open in embedded tabs above
     </div>
 
     <div class="container">
@@ -446,7 +354,7 @@
         
         <!-- Review Page -->
         <div id="review-page" class="page">
-            <!-- Compact Top Bar -->
+            <!-- Compact Top Bar - All fields in one row -->
             <div class="top-bar">
                 <div class="form-group field-vin">
                     <label class="required">Vin/Stock</label>
@@ -475,15 +383,7 @@
                 </div>
             </div>
             
-            <!-- Tab Bar -->
-            <div class="tab-bar" id="tabBar">
-                <!-- Tabs will be added here -->
-            </div>
-            
-            <!-- Iframe Container -->
-            <div class="iframe-container" id="iframeContainer">
-                <!-- Iframes will be added here -->
-            </div>
+            <iframe id="website-frame" class="website-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
         </div>
     </div>
 
@@ -504,9 +404,6 @@
         let submissionCount = 0;
         let sessionData = [];
         let loginData = {};
-        let tabs = [];
-        const MAX_TABS = 5;
-        let tabIdCounter = 1;
         
         // DOM elements
         const loginPage = document.getElementById('login-page');
@@ -515,14 +412,12 @@
         const statusBar = document.getElementById('statusBar');
         const counter = document.getElementById('counter');
         const submissionCountElement = document.getElementById('submissionCount');
+        const websiteFrame = document.getElementById('website-frame');
         const sessionStats = document.getElementById('sessionStats');
         const sessionCountElement = document.getElementById('sessionCount');
         const lastSubmitTimeElement = document.getElementById('lastSubmitTime');
         const summaryModal = document.getElementById('summaryModal');
         const summaryContent = document.getElementById('summaryContent');
-        const rightClickHelper = document.getElementById('rightClickHelper');
-        const tabBar = document.getElementById('tabBar');
-        const iframeContainer = document.getElementById('iframeContainer');
         
         // Form elements
         const dateInput = document.getElementById('date');
@@ -575,8 +470,8 @@
             // Save to localStorage
             saveSessionData();
             
-            // Initialize with only Tab 1
-            initializeTabs(url);
+            // Load website in iframe
+            websiteFrame.src = url;
             
             // Switch to review page
             loginPage.classList.remove('active');
@@ -590,355 +485,10 @@
             sessionStats.style.display = 'block';
             sessionCountElement.textContent = submissionCount;
             
-            // Show right-click helper
-            rightClickHelper.style.display = 'block';
-            setTimeout(() => {
-                rightClickHelper.style.display = 'none';
-            }, 4000);
-            
             // Focus on first input
             setTimeout(() => {
                 vinStockInput.focus();
             }, 100);
-        }
-        
-        // Initialize tabs with only Tab 1
-        function initializeTabs(url) {
-            // Clear existing tabs
-            tabBar.innerHTML = '';
-            iframeContainer.innerHTML = '';
-            tabs = [];
-            tabIdCounter = 1;
-            
-            // Add only Tab 1
-            createTab(url, 'Main');
-            
-            // Show tab count
-            updateTabCounter();
-        }
-        
-        // Create a new tab
-        function createTab(url, title = null) {
-            if (tabs.length >= MAX_TABS) {
-                showStatus('Maximum 5 tabs allowed', 'error');
-                return null;
-            }
-            
-            const tabId = tabIdCounter++;
-            const tabTitle = title || `Tab ${tabId}`;
-            
-            const tab = {
-                id: tabId,
-                url: url,
-                title: tabTitle,
-                active: true
-            };
-            
-            // Create tab element
-            const tabElement = document.createElement('button');
-            tabElement.className = 'tab active';
-            tabElement.dataset.tabId = tabId;
-            tabElement.innerHTML = `
-                <span class="tab-title">${tab.title}</span>
-                <button class="tab-close">×</button>
-            `;
-            
-            tabBar.appendChild(tabElement);
-            
-            // Create iframe - CRITICAL CHANGE: Remove sandbox completely
-            const iframe = document.createElement('iframe');
-            iframe.className = 'website-frame active';
-            iframe.id = `iframe-${tabId}`;
-            // NO SANDBOX - allows full control
-            iframe.referrerpolicy = 'no-referrer-when-downgrade';
-            iframe.src = url;
-            
-            // Set up iframe event listeners BEFORE loading
-            setupIframeEvents(iframe, tabId);
-            
-            iframeContainer.appendChild(iframe);
-            
-            // Add to tabs array
-            tabs.push(tab);
-            
-            // Set this tab as active
-            setActiveTab(tabId);
-            
-            // Add event listeners to tab
-            tabElement.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('tab-close')) {
-                    setActiveTab(tabId);
-                }
-            });
-            
-            // Add close button event listener
-            const closeBtn = tabElement.querySelector('.tab-close');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    closeTab(tabId);
-                });
-            }
-            
-            // Update tab counter
-            updateTabCounter();
-            
-            return tabId;
-        }
-        
-        // Set up iframe events to CAPTURE ALL NEW TAB ATTEMPTS
-        function setupIframeEvents(iframe, tabId) {
-            // Listen for iframe load
-            iframe.addEventListener('load', function() {
-                try {
-                    // Wait a bit for page to fully load
-                    setTimeout(() => {
-                        try {
-                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                            const iframeWin = iframe.contentWindow;
-                            
-                            // OVERRIDE window.open COMPLETELY
-                            const originalWindowOpen = iframeWin.window.open;
-                            iframeWin.window.open = function(url, target, features) {
-                                console.log('window.open intercepted:', url, target);
-                                
-                                // ALWAYS create new embedded tab
-                                const newTabId = createTab(url, 'New Tab');
-                                if (newTabId) {
-                                    showStatus('Opened in new embedded tab', 'success');
-                                }
-                                
-                                // Return null to prevent actual window
-                                return null;
-                            };
-                            
-                            // OVERRIDE window.open at top level too
-                            iframeWin.open = iframeWin.window.open;
-                            
-                            // Intercept ALL link clicks
-                            iframeDoc.addEventListener('click', function(e) {
-                                const link = e.target.closest('a');
-                                if (link && link.href) {
-                                    // Check if it's supposed to open in new tab/window
-                                    const shouldOpenNew = 
-                                        link.target === '_blank' || 
-                                        link.target === 'new' ||
-                                        e.ctrlKey || 
-                                        e.metaKey ||  // Cmd on Mac
-                                        e.shiftKey || 
-                                        e.button === 1; // Middle click
-                                    
-                                    if (shouldOpenNew) {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        e.stopImmediatePropagation();
-                                        
-                                        // Create new embedded tab
-                                        const newTabId = createTab(link.href, 'New Tab');
-                                        if (newTabId) {
-                                            showStatus('Opened in new embedded tab', 'success');
-                                        }
-                                        
-                                        return false;
-                                    }
-                                }
-                            });
-                            
-                            // Intercept middle-click
-                            iframeDoc.addEventListener('auxclick', function(e) {
-                                if (e.button === 1) { // Middle click
-                                    const link = e.target.closest('a');
-                                    if (link && link.href) {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        e.stopImmediatePropagation();
-                                        
-                                        const newTabId = createTab(link.href, 'New Tab');
-                                        if (newTabId) {
-                                            showStatus('Opened in new embedded tab', 'success');
-                                        }
-                                        
-                                        return false;
-                                    }
-                                }
-                            });
-                            
-                            // Intercept right-click context menu
-                            iframeDoc.addEventListener('contextmenu', function(e) {
-                                const link = e.target.closest('a');
-                                if (link && link.href) {
-                                    // Store for later use if needed
-                                    iframeWin.lastRightClickedLink = link.href;
-                                }
-                            });
-                            
-                            // Also override window.open for dynamically created windows
-                            const script = iframeDoc.createElement('script');
-                            script.textContent = `
-                                // Override window.open at the deepest level
-                                (function() {
-                                    const originalWindowOpen = window.open;
-                                    window.open = function(url, target, features) {
-                                        // Send message to parent to open in embedded tab
-                                        window.parent.postMessage({
-                                            type: 'OPEN_IN_EMBEDDED_TAB',
-                                            url: url || '',
-                                            source: 'window.open'
-                                        }, '*');
-                                        return null; // Block actual window
-                                    };
-                                    
-                                    // Also override document.createElement for iframes/objects
-                                    const originalCreateElement = document.createElement;
-                                    document.createElement = function(tagName) {
-                                        const element = originalCreateElement.call(this, tagName);
-                                        if (tagName.toLowerCase() === 'iframe') {
-                                            const originalIframeSetAttribute = element.setAttribute;
-                                            element.setAttribute = function(name, value) {
-                                                if (name === 'src') {
-                                                    window.parent.postMessage({
-                                                        type: 'OPEN_IN_EMBEDDED_TAB',
-                                                        url: value,
-                                                        source: 'iframe'
-                                                    }, '*');
-                                                }
-                                                return originalIframeSetAttribute.call(this, name, value);
-                                            };
-                                        }
-                                        return element;
-                                    };
-                                })();
-                            `;
-                            iframeDoc.head.appendChild(script);
-                            
-                        } catch (e) {
-                            console.log('CORS restriction - cannot modify iframe content');
-                        }
-                    }, 1000);
-                    
-                } catch (e) {
-                    console.log('Error setting up iframe events:', e);
-                }
-            });
-        }
-        
-        // Listen for messages from iframes
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'OPEN_IN_EMBEDDED_TAB') {
-                const { url, source } = event.data;
-                
-                if (url) {
-                    const newTabId = createTab(url, 'New Tab');
-                    if (newTabId) {
-                        showStatus('Opened in embedded tab', 'success');
-                    }
-                }
-            }
-        });
-        
-        // Also add global event listeners to catch any popups
-        window.addEventListener('blur', function() {
-            // If window loses focus (popup might have opened), try to refocus
-            setTimeout(() => {
-                window.focus();
-            }, 100);
-        });
-        
-        // Block actual popup windows
-        window.open = function(url, target, features) {
-            console.log('Blocked popup attempt:', url);
-            
-            // Create embedded tab instead
-            if (url) {
-                const newTabId = createTab(url, 'Popup');
-                if (newTabId) {
-                    showStatus('Popup redirected to embedded tab', 'success');
-                }
-            }
-            
-            return null;
-        };
-        
-        // Set active tab
-        function setActiveTab(tabId) {
-            // Update all tabs to inactive
-            tabs.forEach(tab => {
-                tab.active = false;
-            });
-            
-            // Update all tab elements
-            document.querySelectorAll('.tab').forEach(tabEl => {
-                tabEl.classList.remove('active');
-            });
-            
-            // Update all iframes
-            document.querySelectorAll('.website-frame').forEach(iframe => {
-                iframe.classList.remove('active');
-            });
-            
-            // Set active tab
-            const activeTab = tabs.find(tab => tab.id === tabId);
-            if (activeTab) {
-                activeTab.active = true;
-                
-                // Update tab element
-                const tabEl = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
-                if (tabEl) {
-                    tabEl.classList.add('active');
-                }
-                
-                // Update iframe
-                const iframe = document.getElementById(`iframe-${tabId}`);
-                if (iframe) {
-                    iframe.classList.add('active');
-                }
-            }
-        }
-        
-        // Close tab
-        function closeTab(tabId) {
-            // Don't close the last tab
-            if (tabs.length <= 1) {
-                showStatus('Cannot close the last tab', 'error');
-                return;
-            }
-            
-            // Find tab index
-            const tabIndex = tabs.findIndex(tab => tab.id === tabId);
-            if (tabIndex === -1) return;
-            
-            // Remove tab from array
-            const [removedTab] = tabs.splice(tabIndex, 1);
-            
-            // Remove tab element
-            const tabEl = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
-            if (tabEl) {
-                tabEl.remove();
-            }
-            
-            // Remove iframe
-            const iframe = document.getElementById(`iframe-${tabId}`);
-            if (iframe) {
-                iframe.remove();
-            }
-            
-            // If closed tab was active, activate another tab
-            if (removedTab.active && tabs.length > 0) {
-                // Activate the next tab, or previous if no next
-                const nextTabIndex = Math.min(tabIndex, tabs.length - 1);
-                setActiveTab(tabs[nextTabIndex].id);
-            }
-            
-            // Update tab counter
-            updateTabCounter();
-        }
-        
-        // Update tab counter display
-        function updateTabCounter() {
-            counter.innerHTML = `✓ <span id="submissionCount">${submissionCount}</span>`;
-            if (tabs.length > 1) {
-                counter.innerHTML += ` <span class="tab-count">${tabs.length}</span>`;
-            }
         }
         
         // Submit review data
@@ -993,9 +543,6 @@
                     // Update last submit time
                     lastSubmitTimeElement.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
-                    // Update tab counter
-                    updateTabCounter();
-                    
                     // Auto-focus on Vin/Stock for next entry
                     setTimeout(() => {
                         vinStockInput.focus();
@@ -1015,24 +562,28 @@
             vinStockInput.value = '';
             issueInput.value = '';
             commentInput.value = '';
+            // Reset comment height
             commentInput.style.height = '36px';
         }
         
-        // Submit to Google Forms
+        // Submit to Google Forms (using hidden form technique)
         function submitToGoogleForms(data) {
             return new Promise((resolve, reject) => {
                 try {
+                    // Create hidden iframe
                     const iframe = document.createElement('iframe');
                     iframe.name = 'google-form-iframe-' + Date.now();
                     iframe.style.display = 'none';
                     document.body.appendChild(iframe);
                     
+                    // Create form
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSeBICS9bbzhuZ9oJFczlA24CQeD-DrF-so3E3f3smRzYpILow/formResponse';
                     form.target = iframe.name;
                     form.style.display = 'none';
                     
+                    // Add form fields
                     const fields = {
                         'entry.1920772593': data.date || '',
                         'entry.1492030820': data.review || '',
@@ -1052,8 +603,10 @@
                         form.appendChild(input);
                     }
                     
+                    // Add to document
                     document.body.appendChild(form);
                     
+                    // Handle iframe load (when form submission completes)
                     iframe.onload = function() {
                         setTimeout(() => {
                             document.body.removeChild(form);
@@ -1062,12 +615,14 @@
                         }, 500);
                     };
                     
+                    // Handle iframe error
                     iframe.onerror = function() {
                         document.body.removeChild(form);
                         document.body.removeChild(iframe);
                         resolve(false);
                     };
                     
+                    // Submit form
                     form.submit();
                     
                 } catch (error) {
@@ -1108,12 +663,14 @@
                     sessionData = session.sessionData || [];
                     submissionCount = session.submissionCount || 0;
                     
+                    // Populate login form if data exists
                     if (loginData.date) dateInput.value = loginData.date;
                     if (loginData.review) reviewInput.value = loginData.review;
                     if (loginData.enterpriseId) enterpriseIdInput.value = loginData.enterpriseId;
                     if (loginData.teamId) teamIdInput.value = loginData.teamId;
                     if (loginData.websiteUrl) websiteUrlInput.value = loginData.websiteUrl;
                     
+                    // Update counters
                     if (submissionCount > 0) {
                         submissionCountElement.textContent = submissionCount;
                         sessionCountElement.textContent = submissionCount;
@@ -1137,12 +694,12 @@
                     <div><strong>Reviewer:</strong> ${loginData.review}</div>
                     <div><strong>Session Start:</strong> ${new Date(loginData.sessionStart).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                     <div><strong>Total Submissions:</strong> ${submissionCount}</div>
-                    <div><strong>Active Tabs:</strong> ${tabs.length}</div>
                 </div>
                 <div style="max-height: 200px; overflow-y: auto; border-top: 1px solid #eee; padding-top: 10px;">
                     <div style="font-weight: bold; margin-bottom: 5px;">Recent Submissions:</div>
             `;
             
+            // Show last 10 submissions
             const recentSubmissions = sessionData.slice(-10).reverse();
             if (recentSubmissions.length > 0) {
                 recentSubmissions.forEach((item, index) => {
@@ -1168,15 +725,17 @@
         // End session
         function endSession() {
             if (confirm('End current review session and return to login?')) {
+                // Clear session data
                 localStorage.removeItem('reviewSessionData');
                 
+                // Reset counters
                 submissionCount = 0;
                 sessionData = [];
-                tabs = [];
-                tabIdCounter = 1;
                 
+                // Hide counter
                 counter.style.display = 'none';
                 
+                // Clear form
                 clearReviewForm();
                 dateInput.value = new Date().toISOString().split('T')[0];
                 reviewInput.value = '';
@@ -1184,6 +743,7 @@
                 teamIdInput.value = '';
                 websiteUrlInput.value = '';
                 
+                // Go back to login
                 reviewPage.classList.remove('active');
                 loginPage.classList.add('active');
                 sessionStats.style.display = 'none';
@@ -1192,7 +752,7 @@
             }
         }
         
-        // Keyboard shortcuts
+        // Keyboard shortcuts for quick submission
         document.addEventListener('keydown', function(e) {
             // Only work on review page
             if (!reviewPage.classList.contains('active')) return;
@@ -1203,26 +763,7 @@
                 e.preventDefault();
             }
             
-            // Ctrl+Tab to switch tabs
-            if (e.ctrlKey && e.key === 'Tab') {
-                if (tabs.length > 1) {
-                    e.preventDefault();
-                    const currentIndex = tabs.findIndex(tab => tab.active);
-                    const nextIndex = (currentIndex + 1) % tabs.length;
-                    setActiveTab(tabs[nextIndex].id);
-                }
-            }
-            
-            // Ctrl+W to close current tab
-            if (e.ctrlKey && e.key === 'w') {
-                const activeTab = tabs.find(tab => tab.active);
-                if (activeTab && tabs.length > 1) {
-                    closeTab(activeTab.id);
-                    e.preventDefault();
-                }
-            }
-            
-            // Tab navigation with Enter
+            // Tab to navigate between fields
             if (e.key === 'Enter' && !e.ctrlKey && !e.altKey) {
                 const activeElement = document.activeElement;
                 if (activeElement === vinStockInput) {
@@ -1245,9 +786,9 @@
             }
         });
         
-        // Auto-resize comment textarea
+        // Auto-resize comment textarea (limited to 36px height)
         commentInput.addEventListener('input', function() {
-            this.style.height = '36px';
+            this.style.height = '36px'; // Reset to base height
             if (this.scrollHeight > 36) {
                 this.style.height = '36px';
                 this.style.overflowY = 'auto';
