@@ -53,7 +53,7 @@
             border-radius: 4px;
             font-size: 14px;
             box-sizing: border-box;
-            height: 36px; /* Same height for all */
+            height: 36px;
         }
         
         textarea {
@@ -74,36 +74,34 @@
             font-size: 14px;
             font-weight: bold;
             transition: background 0.3s;
-            height: 36px; /* Same height as inputs */
+            height: 36px;
         }
         
         .btn:hover {
             background: #45a049;
         }
         
-        /* COMPACT TOP BAR - All in one row */
         .top-bar {
             background: #2c3e50;
             color: white;
             padding: 8px 20px;
             display: flex;
-            gap: 15px; /* Space between fields */
-            align-items: flex-end; /* Align items at bottom */
+            gap: 15px;
+            align-items: flex-end;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             flex-wrap: nowrap;
-            height: 75px; /* Fixed compact height */
+            height: 75px;
         }
         
         .top-bar .form-group {
-            flex: 1; /* Equal width for all fields */
+            flex: 1;
             margin: 0;
             min-width: 0;
             display: flex;
             flex-direction: column;
-            height: 60px; /* Fixed height for form group */
+            height: 60px;
         }
         
-        /* Make all fields same height */
         .top-bar input,
         .top-bar select,
         .top-bar textarea {
@@ -111,7 +109,6 @@
             flex-shrink: 0;
         }
         
-        /* Adjust label spacing */
         .top-bar label {
             font-size: 12px;
             margin-bottom: 4px;
@@ -119,7 +116,6 @@
             flex-shrink: 0;
         }
         
-        /* Buttons container */
         .buttons-container {
             display: flex;
             gap: 10px;
@@ -216,7 +212,6 @@
             font-size: 12px;
         }
         
-        /* Login form specific */
         .login-container {
             display: flex;
             justify-content: center;
@@ -233,7 +228,6 @@
             max-width: 450px;
         }
         
-        /* Session stats - compact */
         .session-stats {
             margin-top: 20px;
             padding: 12px;
@@ -249,7 +243,6 @@
             margin-bottom: 5px;
         }
         
-        /* Summary modal */
         .summary-modal {
             display: none;
             position: fixed;
@@ -273,14 +266,12 @@
             overflow-y: auto;
         }
         
-        /* Ensure consistent field heights */
         .field-vin,
         .field-issue,
         .field-comment {
             flex: 1;
         }
         
-        /* Specific adjustment for textarea to match height */
         #comment {
             resize: none;
             overflow-y: auto;
@@ -290,21 +281,17 @@
     </style>
 </head>
 <body>
-    <!-- Loading Indicator -->
     <div id="loading" class="loading">
         Submitting...
     </div>
     
-    <!-- Status Bar -->
     <div id="statusBar" class="status-bar"></div>
     
-    <!-- Submission Counter -->
     <div id="counter" class="counter" style="display: none;">
         ✓ <span id="submissionCount">0</span>
     </div>
 
     <div class="container">
-        <!-- Login Page -->
         <div id="login-page" class="page active">
             <div class="login-container">
                 <div class="login-card">
@@ -337,7 +324,6 @@
                         Start Review Session
                     </button>
                     
-                    <!-- Session Statistics -->
                     <div id="sessionStats" class="session-stats">
                         <div class="stats-row">
                             <span>Total Submissions:</span>
@@ -352,9 +338,7 @@
             </div>
         </div>
         
-        <!-- Review Page -->
         <div id="review-page" class="page">
-            <!-- Compact Top Bar - All fields in one row -->
             <div class="top-bar">
                 <div class="form-group field-vin">
                     <label class="required">Vin/Stock</label>
@@ -387,7 +371,6 @@
         </div>
     </div>
 
-    <!-- Compact Session Summary Modal -->
     <div id="summaryModal" class="summary-modal">
         <div class="summary-content">
             <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 18px;">Session Summary</h3>
@@ -400,12 +383,10 @@
     </div>
 
     <script>
-        // Global variables
         let submissionCount = 0;
         let sessionData = [];
         let loginData = {};
         
-        // DOM elements
         const loginPage = document.getElementById('login-page');
         const reviewPage = document.getElementById('review-page');
         const loading = document.getElementById('loading');
@@ -419,7 +400,6 @@
         const summaryModal = document.getElementById('summaryModal');
         const summaryContent = document.getElementById('summaryContent');
         
-        // Form elements
         const dateInput = document.getElementById('date');
         const reviewInput = document.getElementById('review');
         const enterpriseIdInput = document.getElementById('enterpriseId');
@@ -429,22 +409,19 @@
         const issueInput = document.getElementById('issue');
         const commentInput = document.getElementById('comment');
         
-        // Set today's date
+        // Set today's date - always show current date
         dateInput.valueAsDate = new Date();
         
         // Load session data from localStorage
         loadSessionData();
         
-        // Setup review session
         function setupReview() {
-            // Validate required fields
             if (!dateInput.value || !reviewInput.value || !enterpriseIdInput.value || 
                 !teamIdInput.value || !websiteUrlInput.value) {
                 showStatus('Please fill all required fields', 'error');
                 return;
             }
             
-            // Validate URL
             let url = websiteUrlInput.value.trim();
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'https://' + url;
@@ -457,7 +434,6 @@
                 return;
             }
             
-            // Save login data
             loginData = {
                 date: dateInput.value,
                 review: reviewInput.value,
@@ -467,48 +443,33 @@
                 sessionStart: new Date().toISOString()
             };
             
-            // Save to localStorage
             saveSessionData();
-            
-            // Load website in iframe
             websiteFrame.src = url;
-            
-            // Switch to review page
             loginPage.classList.remove('active');
             reviewPage.classList.add('active');
-            
-            // Show counter
             counter.style.display = 'block';
             submissionCountElement.textContent = submissionCount;
-            
-            // Show session stats
             sessionStats.style.display = 'block';
             sessionCountElement.textContent = submissionCount;
             
-            // Focus on first input
             setTimeout(() => {
                 vinStockInput.focus();
             }, 100);
         }
         
-        // Submit review data
         function submitReview() {
-            // Get values
             const vinStock = vinStockInput.value.trim();
             const issue = issueInput.value;
             const comment = commentInput.value.trim();
             
-            // Validate
             if (!vinStock || !issue) {
                 showStatus('Please enter Vin/Stock and select an Issue', 'error');
                 vinStockInput.focus();
                 return;
             }
             
-            // Show loading
             loading.style.display = 'block';
             
-            // Prepare data
             const reviewData = {
                 ...loginData,
                 vinStock: vinStock,
@@ -517,33 +478,23 @@
                 timestamp: new Date().toISOString()
             };
             
-            // Save to session data
             sessionData.push(reviewData);
             
-            // Submit to Google Forms in background
             submitToGoogleForms(reviewData).then(success => {
-                // Hide loading
                 loading.style.display = 'none';
                 
                 if (success) {
-                    // Increment counter
                     submissionCount++;
                     submissionCountElement.textContent = submissionCount;
                     sessionCountElement.textContent = submissionCount;
                     
-                    // Show success status
                     showStatus(`✓ Submitted: ${vinStock}`, 'success');
                     
-                    // Clear form fields
                     clearReviewForm();
-                    
-                    // Save session data
                     saveSessionData();
                     
-                    // Update last submit time
                     lastSubmitTimeElement.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
-                    // Auto-focus on Vin/Stock for next entry
                     setTimeout(() => {
                         vinStockInput.focus();
                     }, 50);
@@ -557,33 +508,27 @@
             });
         }
         
-        // Clear review form
         function clearReviewForm() {
             vinStockInput.value = '';
             issueInput.value = '';
             commentInput.value = '';
-            // Reset comment height
             commentInput.style.height = '36px';
         }
         
-        // Submit to Google Forms (using hidden form technique)
         function submitToGoogleForms(data) {
             return new Promise((resolve, reject) => {
                 try {
-                    // Create hidden iframe
                     const iframe = document.createElement('iframe');
                     iframe.name = 'google-form-iframe-' + Date.now();
                     iframe.style.display = 'none';
                     document.body.appendChild(iframe);
                     
-                    // Create form
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSeBICS9bbzhuZ9oJFczlA24CQeD-DrF-so3E3f3smRzYpILow/formResponse';
                     form.target = iframe.name;
                     form.style.display = 'none';
                     
-                    // Add form fields
                     const fields = {
                         'entry.1920772593': data.date || '',
                         'entry.1492030820': data.review || '',
@@ -603,10 +548,8 @@
                         form.appendChild(input);
                     }
                     
-                    // Add to document
                     document.body.appendChild(form);
                     
-                    // Handle iframe load (when form submission completes)
                     iframe.onload = function() {
                         setTimeout(() => {
                             document.body.removeChild(form);
@@ -615,14 +558,12 @@
                         }, 500);
                     };
                     
-                    // Handle iframe error
                     iframe.onerror = function() {
                         document.body.removeChild(form);
                         document.body.removeChild(iframe);
                         resolve(false);
                     };
                     
-                    // Submit form
                     form.submit();
                     
                 } catch (error) {
@@ -631,7 +572,6 @@
             });
         }
         
-        // Show status message
         function showStatus(message, type) {
             statusBar.textContent = message;
             statusBar.className = 'status-bar status-' + type;
@@ -642,7 +582,6 @@
             }, 2000);
         }
         
-        // Save session data to localStorage
         function saveSessionData() {
             const session = {
                 loginData: loginData,
@@ -653,7 +592,6 @@
             localStorage.setItem('reviewSessionData', JSON.stringify(session));
         }
         
-        // Load session data from localStorage
         function loadSessionData() {
             try {
                 const savedSession = localStorage.getItem('reviewSessionData');
@@ -663,14 +601,7 @@
                     sessionData = session.sessionData || [];
                     submissionCount = session.submissionCount || 0;
                     
-                    // Populate login form if data exists
-                    if (loginData.date) dateInput.value = loginData.date;
-                    if (loginData.review) reviewInput.value = loginData.review;
-                    if (loginData.enterpriseId) enterpriseIdInput.value = loginData.enterpriseId;
-                    if (loginData.teamId) teamIdInput.value = loginData.teamId;
-                    if (loginData.websiteUrl) websiteUrlInput.value = loginData.websiteUrl;
-                    
-                    // Update counters
+                    // Update counters only, do NOT populate login form fields
                     if (submissionCount > 0) {
                         submissionCountElement.textContent = submissionCount;
                         sessionCountElement.textContent = submissionCount;
@@ -687,7 +618,6 @@
             }
         }
         
-        // Show session summary
         function showSummary() {
             let summaryHTML = `
                 <div style="margin-bottom: 15px;">
@@ -699,7 +629,6 @@
                     <div style="font-weight: bold; margin-bottom: 5px;">Recent Submissions:</div>
             `;
             
-            // Show last 10 submissions
             const recentSubmissions = sessionData.slice(-10).reverse();
             if (recentSubmissions.length > 0) {
                 recentSubmissions.forEach((item, index) => {
@@ -717,12 +646,10 @@
             summaryModal.style.display = 'flex';
         }
         
-        // Close summary modal
         function closeSummary() {
             summaryModal.style.display = 'none';
         }
         
-        // End session
         function endSession() {
             if (confirm('End current review session and return to login?')) {
                 // Clear session data
@@ -731,19 +658,21 @@
                 // Reset counters
                 submissionCount = 0;
                 sessionData = [];
+                loginData = {};
                 
                 // Hide counter
                 counter.style.display = 'none';
                 
-                // Clear form
+                // Clear review form
                 clearReviewForm();
-                dateInput.value = new Date().toISOString().split('T')[0];
+                
+                // Clear ALL login form fields EXCEPT date (date is already set to current)
                 reviewInput.value = '';
                 enterpriseIdInput.value = '';
                 teamIdInput.value = '';
                 websiteUrlInput.value = '';
                 
-                // Go back to login
+                // Go back to login page
                 reviewPage.classList.remove('active');
                 loginPage.classList.add('active');
                 sessionStats.style.display = 'none';
@@ -752,18 +681,36 @@
             }
         }
         
-        // Keyboard shortcuts for quick submission
+        // Initialize form on page load - clear all fields except date
+        function initializeLoginForm() {
+            // Set date to current
+            dateInput.valueAsDate = new Date();
+            
+            // Clear all other fields
+            reviewInput.value = '';
+            enterpriseIdInput.value = '';
+            teamIdInput.value = '';
+            websiteUrlInput.value = '';
+            
+            // Clear session stats
+            sessionStats.style.display = 'none';
+            sessionCountElement.textContent = '0';
+            lastSubmitTimeElement.textContent = '-';
+        }
+        
+        // Initialize form when page loads
+        window.addEventListener('load', function() {
+            initializeLoginForm();
+        });
+        
         document.addEventListener('keydown', function(e) {
-            // Only work on review page
             if (!reviewPage.classList.contains('active')) return;
             
-            // Ctrl+Enter or Alt+Enter to submit
             if ((e.ctrlKey || e.altKey) && e.key === 'Enter') {
                 submitReview();
                 e.preventDefault();
             }
             
-            // Tab to navigate between fields
             if (e.key === 'Enter' && !e.ctrlKey && !e.altKey) {
                 const activeElement = document.activeElement;
                 if (activeElement === vinStockInput) {
@@ -778,7 +725,6 @@
                 }
             }
             
-            // Escape key to clear form
             if (e.key === 'Escape') {
                 clearReviewForm();
                 vinStockInput.focus();
@@ -786,16 +732,14 @@
             }
         });
         
-        // Auto-resize comment textarea (limited to 36px height)
         commentInput.addEventListener('input', function() {
-            this.style.height = '36px'; // Reset to base height
+            this.style.height = '36px';
             if (this.scrollHeight > 36) {
                 this.style.height = '36px';
                 this.style.overflowY = 'auto';
             }
         });
         
-        // Auto-focus on review page load
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden && reviewPage.classList.contains('active')) {
                 setTimeout(() => {
@@ -804,7 +748,6 @@
             }
         });
         
-        // Initialize comment height
         commentInput.style.height = '36px';
     </script>
 </body>
